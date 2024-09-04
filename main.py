@@ -1,5 +1,6 @@
 # Press ⌃R to execute it.
 import csv
+from warnings import catch_warnings
 
 # Important initializations. used for filenames.
 fulldata_filename = 'FullNormalData.csv'
@@ -8,6 +9,7 @@ final_filename = 'RemainderRows.csv'
 
 #fields = []
 with open(final_filename, 'w') as final_file:
+    print('Attempting file filtering...')
     final_file_csv = csv.writer(final_file)
     with open(fulldata_filename, 'r') as fulldata_file:
         # Create CSV file. Find the index of the ID field for future use.
@@ -23,7 +25,11 @@ with open(final_filename, 'w') as final_file:
             #fulldata_row = next(fulldata_csv)
             fulldata_id = row[id_index_full]
 
-            if row[year_index] == '2024':
+            try:
+                if int(row[year_index]) <= 2024:
+                    continue
+            except:
+                print('Issue occurred with entry {fname} {lname}. Year given: {year}'.format(fname = row[2], lname = row[3], year = row[year_index]))
                 continue
 
             # Open the filter file. Find the index of the ID field as well.
@@ -44,3 +50,4 @@ with open(final_filename, 'w') as final_file:
 
                 if not in_filter:
                     final_file_csv.writerow(row)
+    print('\nall filtered entries successfully transferred to {filename}.'.format(filename = final_filename))
